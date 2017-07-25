@@ -9,9 +9,10 @@
 #define POWER_START_POS_2 8 //小值 幂的开始位置
 #define POW_LONG_LEN 2 //幂最长的长度
 #define POW_SHORT_LEN 1 //幂最短的长度
+using namespace std;
 typedef struct _element
 {
-	char value[6];
+	char value[7];
 	short power;//幂
 }Element;
 
@@ -21,9 +22,9 @@ public:
 	Scanner(){};
 	~Scanner(){};
 	int Scan(void);
-	int AppendElem(Elememt &input);//添加一个空的输入
-	int SetValue(const char * input);
-	int SetPower(const char * input);
+	int AppendElem(Element &input);//添加一个空的输入
+	int SetValue(const char * input,Element &output);
+	int SetPower(const char * input,Element &output);
 
 	vector<Element> recvContent;//输入的内容
 };
@@ -35,7 +36,7 @@ int Scanner::Scan()
 	while(1)
 	{
 		char recv[MAXLINE];//输入的行内容
-		fgets(recv,MAXLINE,stdin);
+		fgets(recv,MAXLINE+1,stdin);
 		if(recv[0]=='\n' || recv[0] == ' ')
 		{
 			return -1;
@@ -52,7 +53,8 @@ int Scanner::Scan()
 
 int Scanner::SetValue(const char *input,Element &output)
 {
-	memcpy(input,output.value,VALUE_LENGTH);
+	memcpy(output.value,input,VALUE_LENGTH);
+	output.value[6] = '\0';
 	return 0;
 }
 //题中述 幂的位置可能从第8位或第9位开始
@@ -82,6 +84,8 @@ int Scanner::AppendElem(Element& elem)
 
 int main(void)
 {
-	
+	Scanner scanner;
+	scanner.Scan();
+
 	return 0;
 }
