@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -15,6 +16,7 @@ typedef struct _element
 	char value[7];
 	short power;//幂
 }Element;
+typedef char (*Array_Pointer)[126];
 
 class Scanner
 {
@@ -325,7 +327,7 @@ int main(void)
 
     int size = scanner.recvContent.size();
     char (*p)[126];
-    p = malloc(size*126);
+    p = (Array_Pointer)malloc(size*126);
     Analysis analy;
     Formater formater;
     Multiplication multi;
@@ -337,13 +339,13 @@ int main(void)
         char result[126];
         short result_len = 5;
 
-        analy.Coverse(scanner.recvContent[i].value,6);
-        analy.GetPos(scaner.recvContent[i].value,point_pos,6,'.');
+        formater.Coverse(scanner.recvContent[i].value,6);
+        analy.GetPos(scanner.recvContent[i].value,point_pos,6,'.');
         point_pos++;
-        analy.GetPowerDec(pos,scanner.recvContent[i].power,point_count);
+        analy.GetPowerDec(point_pos,scanner.recvContent[i].power,point_count);
         formater.DelPoint(scanner.recvContent[i].value,tmp);
         formater.GetNum(tmp,5);
-        for(short i = 0; i < scanner,recvContent[i].power - 1;i++)
+        for(short i = 0; i < scanner.recvContent[i].power - 1;i++)
         {
             char tmp1[126];
             short tmp1_len;
