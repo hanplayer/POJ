@@ -339,7 +339,7 @@ int Graph::Build(std::vector<std::string> Info)
             int adjvex,price;
             analyCmd.GetCmdParameter(*it,1,adjvex);
             analyCmd.GetCmdParameter(*it,2,price);
-            AddVnodeEnd(i,adjvex,price);
+            AddVnodeEnd(i,adjvex - 1,price);
         }        
     }
 }
@@ -602,7 +602,7 @@ public:
     MinHeap(T *p,int nodeNum);
     int Sort(int pos);//按照最小堆的规则重新整理堆，自上而下,把pos指定的位置当作根，默认pos以下都是最小堆
     int SortAll(void);//按照最小堆的规则重新整理堆 整个堆
-    int SiftUp(int position); // 从position向上开始调整，使序列成为堆 
+    int SiftUp(int position); // 从position向上开始调整，使序列成为堆 return 0 标示不再调整 return 1表示自身是左子节点并和父节点互换 return 2标识自己是右子节点 和父节点互换
     int SiftDown(int position); // 筛选法函数，参数left表示开始处理的数组下标 return 0 表示没有调整 return 1 表示和左下角互换 return 2表示和右下角互换 
     bool RemoveEnd(T& result); // 删除给定下标的元素
     T RemoveMin(void); // 从堆顶删除最小值 删除后最小堆重新排序
@@ -619,7 +619,39 @@ int MinHeap<T>::Depth()
     depth = (int)log2(NodeNum+1)+1;
     return depth;
 }
-    
+
+template <typename T>
+int MinHeap<T>::SiftUp(int pos)
+{
+    BinaryTreeNode<T> * p = NodePostion(pos);
+    if(p == NULL)
+    {
+        return -1;//说明此满二叉树给定节点为空
+    }
+    if(p->Parent()==NULL)//没有父节点
+    {
+        return 0;
+    }
+    else if( p->value() < p->Parent()->value() )
+    {
+        T tmp = p->value();
+        p->setValue(p->Parent()->value());
+        p->Parent()->setValue(tmp);
+        switch(pos%2)
+        {
+            case 0:
+            {
+                return 2;
+            }
+            case 1:
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;   
+}
+
 template <typename T>
 int MinHeap<T>::SiftDown(int pos)
 {
@@ -674,6 +706,8 @@ MinHeap<T>::MinHeap(T *p,int nodeNum):NodeNum(0)
         Insert(p[i]);
     }
 }
+
+
 
 template <typename T>
 BinaryTreeNode<T> *MinHeap<T>::NodePostion(int pos)
@@ -816,6 +850,8 @@ int MinHeap<T>::SortAll()
 }
 
 
+    
+
 
 int main(void)
 {
@@ -830,7 +866,7 @@ int main(void)
         std::cout<<*it<<std::endl;
     }
 #endif
-#if 1  
+#if 0 
     Graph graph;
     graph.Build(scanner.Info);
 
@@ -876,6 +912,25 @@ int main(void)
     cout<<"b:"<<b.weight<<endl;
     return 0;
 #endif
+#if 1
+    //init
+    _info a[100];
+    for(int i = 0; i <100 ;i++)
+    {
+        a[i].id = i;
+        a[i].weight = 99999;
+    }
+    MinHeap<_info> mHeap(a,5);
+
+
+    int AddrTable[100];
+    for(int i = 0 ;i < 100 ;i++)
+    {
+        AddrTable[i] = i;
+    }
+
+    
+#endif  
 
 }
 
