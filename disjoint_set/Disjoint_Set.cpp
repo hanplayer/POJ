@@ -9,6 +9,8 @@ Disjoint_Set 不相交集合
 #include <utility>//make_pair()
 using namespace std;
 
+#define NUM 10000     //预先定义
+
 /*以下为链表实现*/
 struct _SetNode;
 struct _SetHead;
@@ -110,13 +112,73 @@ void Disjoint_Set::Union(int x,int y)
 	}
 }
 
+
+//并查集森林实现方式
+class Disjoint_Set_Forest
+{
+
+public:
+	void Make_Set(int x);
+	int  Find_Set(int x);
+	void Union(int x,int y);
+private:
+	int parent[NUM];
+	int rank[NUM];
+
+};
+
+
+void Disjoint_Set_Forest::Make_Set(int x)
+{
+	rank[x] = 0;
+	parent[x] = x;
+}
+
+int Disjoint_Set_Forest::Find_Set(int x)
+{
+	if( x == parent[x] )
+	{
+		return x;
+	}
+	else
+	{
+		x = parent[x];
+		parent[x] = Find_Set(x);
+		return Find_Set(x);
+	}
+}
+
+
+void Disjoint_Set_Forest::Union(int x,int y)
+{
+	int first,second;
+	first = Find_Set(x);
+	second = Find_Set(y);
+	if(rank[first] == rank[second])
+	{
+		rank[second]++;
+		parent[first] = second;//将x代表的集合合并到y代表的集合中
+	}
+	else if(rank[first] > rank[second])
+	{
+		parent[second] = first;
+	}
+	else if(rank[first] < rank[second])
+	{
+		parent[first] = second;
+	}
+}
+
+
+
 std::map<int,SetNode*> Disjoint_Set::dic;//静态变量使用默认构造函数初始化
 int main(void)
 {
+
 	//9 13 5 7 6 4
 	int store[6] = {9, 13, 5, 7, 6 ,4};
 
-
+#if 1
 	Disjoint_Set::Make_Set(store[0]);
 
 	Disjoint_Set::Make_Set(store[1]);
@@ -142,6 +204,35 @@ int main(void)
 		std::cout<<"i:"<<i<<std::endl;
 		std::cout<<"store["<<i<<"] belong to:"<<Disjoint_Set::Find_Set(store[i])<<std::endl;
 	}
+#endif
+
+	std::cout<<"----------------------------------------------"<<std::endl;
+
+#if 1
+	Disjoint_Set_Forest forest;
+	forest.Make_Set(store[0]);
+
+	forest.Make_Set(store[1]);
+
+	forest.Make_Set(store[2]);
+
+	forest.Make_Set(store[3]);
+
+	forest.Make_Set(store[4]);
+
+	forest.Make_Set(store[5]);	
+
+	forest.Union(9,13);
+
+	forest.Union(13,6);
+
+	forest.Union(5,7);
 	
+	for(int i = 0;i < 6;i++)
+	{
+		std::cout<<"i:"<<i<<std::endl;
+		std::cout<<"store["<<i<<"] belong to:"<<forest.Find_Set(store[i])<<std::endl;
+	}
+#endif	
 	return 0;
 }
