@@ -139,5 +139,26 @@ void MinHeap<T>::SiftUp(int pos)
 template <class T>
 void MinHeap<T>::SiftDown(int pos)
 {
+	int layer;//层数
+	int maxlayer;//最下一层所属层数
+	layer = (int)log2f( (float)(pos + 1) );
+	maxlayer = log2f( (float)(CurrentSize + 1) );
+
+	if(layer==maxlayer)
+	{
+		return ;
+	}
 	
+	int left_child_pos = leftchild(pos);//左子节点的位置
+	int right_child_pos = rightchild(pos);//右子节点的位置
+	if( heapArray[left_child_pos] < heapArray[pos] )
+	{
+		std::swap(heapArray[left_child_pos],heapArray[pos]);
+		SiftDown(left_child_pos);
+	}
+	else if( heapArray[right_child_pos] < heapArray[pos] )
+	{
+		std::swap(heapArray[right_child_pos],heapArray[pos]);
+		SiftUp(right_child_pos);
+	}
 }
