@@ -1,7 +1,6 @@
-#include <iostream>
-#include <exception>
 #include <cmath>// log2f
 #include <algorithm>//std::swap
+//#include <stdio.h>//printf()
 
 //定义最小堆，堆使用一维数组来存储
 template <class T>
@@ -14,14 +13,14 @@ private:
 	void BuildHeap(void);//建堆
 public:
 	MinHeap(const int n);//n为最大元素数目
-	virtual ~MinHeap(){delete []heapArray};
+	virtual ~MinHeap(){delete []heapArray;};
 	bool isLeaf(int pos)const;
 	int leftchild(int pos)const;//返回左孩子的位置
 	int rightchild(int pos)const;//返回
 	int parent(int pos) const;
 	bool Remove(int pos,T &node);// 删除给定下标的元素
 	bool Insert(const T&newnode);// 向堆中插入新元素newNode
-	T& RemoveMin();//删除堆顶的最小值
+	T RemoveMin();//删除堆顶的最小值
 	void SiftUp(int pos);// 从position向上开始调整，使序列成为堆
 	void SiftDown(int left);// 筛选法函数，参数left表示开始处理的数组下标
 };
@@ -39,7 +38,7 @@ template <class T>
 MinHeap<T>::MinHeap(const int n)
 {
 	heapArray = new T[n];
-	CurrentSize = MaxSize = n;
+	MaxSize = n;
 }
 
 template <class T>
@@ -82,11 +81,15 @@ bool MinHeap<T>::Remove(int pos,T &node)
 {
 	if( ( pos > CurrentSize - 1 ) || (pos < 0) )
 	{
+		memset(&node,0,sizeof(node));//若pos输入不合理，则返回一个全0的T
 		return false;
 	}
 
 	int parnet_pos = parent(pos);//父节点的位置
-	if( heapArray[parnet_pos] > heapArray[pos] )
+	node = heapArray[pos];
+	heapArray[pos] = heapArray[CurrentSize - 1];//把堆尾的数拿过来
+	CurrentSize--;
+	if( heapArray[pos] < heapArray[parnet_pos] )
 	{
 		SiftUp(pos);
 	}
@@ -113,7 +116,7 @@ bool MinHeap<T>::Insert(const T&newnode)
 }
 
 template <class T>
-T& MinHeap<T>::RemoveMin()
+T MinHeap<T>::RemoveMin()
 {
 	T result;
 	Remove(0,result);
@@ -123,13 +126,13 @@ T& MinHeap<T>::RemoveMin()
 template <class T>
 void MinHeap<T>::SiftUp(int pos)
 {
-	if(pos = 0)
+	if(pos == 0)
 	{
 		return;
 	}
 
 	int parent_pos = parent(pos);//父节点的位置
-	if( heapArray[parent_pos] > heapArray[pos] )
+	if( heapArray[pos] < heapArray[parent_pos] ) 
 	{
 		std::swap(heapArray[parent_pos],heapArray[pos]);//将父子节点的值交换
 		SiftUp(parent_pos);
@@ -139,12 +142,7 @@ void MinHeap<T>::SiftUp(int pos)
 template <class T>
 void MinHeap<T>::SiftDown(int pos)
 {
-	int layer;//层数
-	int maxlayer;//最下一层所属层数
-	layer = (int)log2f( (float)(pos + 1) );
-	maxlayer = log2f( (float)(CurrentSize + 1) );
-
-	if(layer==maxlayer)
+	if( isLeaf(pos) )
 	{
 		return ;
 	}
@@ -162,3 +160,20 @@ void MinHeap<T>::SiftDown(int pos)
 		SiftUp(right_child_pos);
 	}
 }
+/*
+//just test
+int main(void)
+{
+	MinHeap<int> heap(10);
+	int a[10] = {9,11,5,7,6,3,6,20,29,1};
+	for(int i = 0 ; i < 20;i++)
+	{
+		heap.Insert(a[i]);
+	}
+	for(int j = 0;j < 10;j++)
+	{
+		printf("%d\n",heap.heapArray[j]);
+	}
+	return 0;
+}
+*/
