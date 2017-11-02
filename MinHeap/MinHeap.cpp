@@ -1,12 +1,15 @@
 #include <cmath>// log2f
 #include <algorithm>//std::swap
-//#include <stdio.h>//printf()
+#include <iostream>
+#include <stdio.h>//printf()
+#include <memory.h>//memset()
 
 //定义最小堆，堆使用一维数组来存储
 template <class T>
 class MinHeap
 {
-private:
+public:
+//private:
 	T * heapArray;//存放对元素的数组
 	int CurrentSize;//当前堆中元素数目
 	int MaxSize;//堆能容纳的最大元素数目
@@ -35,10 +38,9 @@ void MinHeap<T>::BuildHeap()
 }
 
 template <class T>
-MinHeap<T>::MinHeap(const int n)
+MinHeap<T>::MinHeap(const int n):MaxSize(n),CurrentSize(0)
 {
 	heapArray = new T[n];
-	MaxSize = n;
 }
 
 template <class T>
@@ -142,25 +144,54 @@ void MinHeap<T>::SiftUp(int pos)
 template <class T>
 void MinHeap<T>::SiftDown(int pos)
 {
-	if( isLeaf(pos) )
+	if( (pos*2+1)>(CurrentSize - 1) )
 	{
 		return ;
 	}
 	
 	int left_child_pos = leftchild(pos);//左子节点的位置
 	int right_child_pos = rightchild(pos);//右子节点的位置
-	if( heapArray[left_child_pos] < heapArray[pos] )
+
+	if( heapArray[left_child_pos] < heapArray[pos] && heapArray[pos] < heapArray[right_child_pos] )//左孩子最小
 	{
 		std::swap(heapArray[left_child_pos],heapArray[pos]);
 		SiftDown(left_child_pos);
 	}
-	else if( heapArray[right_child_pos] < heapArray[pos] )
+	else if( heapArray[right_child_pos] < heapArray[pos] && heapArray[pos] < heapArray[left_child_pos] )//右孩子最小
 	{
 		std::swap(heapArray[right_child_pos],heapArray[pos]);
-		SiftUp(right_child_pos);
+		SiftDown(right_child_pos);
+	}
+	else if(  heapArray[left_child_pos] < heapArray[pos] && heapArray[right_child_pos] < heapArray[pos] )//当前节点比两个孩子都大
+	{
+		if( heapArray[left_child_pos] < heapArray[right_child_pos] )//右节点大于左
+		{
+			std::swap(heapArray[left_child_pos],heapArray[pos]);
+			SiftDown(left_child_pos);
+		}
+		else if( heapArray[right_child_pos] < heapArray[left_child_pos] )//左大于右
+		{
+			std::swap(heapArray[right_child_pos],heapArray[pos]);
+			SiftDown(right_child_pos);
+		}
+		else//左等于右
+		{
+			std::swap(heapArray[left_child_pos],heapArray[pos]);
+			SiftDown(left_child_pos);
+		}
+	}
+	else if( heapArray[left_child_pos] < heapArray[right_child_pos] &&  heapArray[right_child_pos] == heapArray[pos] )
+	{
+		std::swap(heapArray[left_child_pos],heapArray[pos]);
+		SiftDown(left_child_pos);		
+	}
+	else if( heapArray[right_child_pos] < heapArray[left_child_pos] && heapArray[left_child_pos] == heapArray[pos] )
+	{
+		std::swap(heapArray[right_child_pos],heapArray[pos]);
+		SiftDown(right_child_pos);
 	}
 }
-/*
+
 //just test
 int main(void)
 {
@@ -174,6 +205,19 @@ int main(void)
 	{
 		printf("%d\n",heap.heapArray[j]);
 	}
+
+
+	for(int m = 1 ; m <= 10; m++)
+	{
+		std::cout<<"=================="<<m<<"=================="<<std::endl;
+		heap.RemoveMin();
+		for(int j = 0;j < 10 - m;j++)
+		{
+			printf("%d\n",heap.heapArray[j]);
+		}		
+	}
+
+
+
 	return 0;
 }
-*/
